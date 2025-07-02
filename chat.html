@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Customer Help Center</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #000000, #0a0f33);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #3db2ff;
+      text-shadow: 0 0 8px #3db2ff;
+    }
+
+    .issue-select-container {
+      margin: 20px 0;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    select {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background-color: #1a1a2e;
+      color: white;
+      outline: none;
+      box-shadow: 0 0 10px #3db2ff88;
+    }
+
+    .chat-popup {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 320px;
+      background: #0a0f33;
+      border-radius: 20px;
+      box-shadow: 0 0 20px #3db2ff88;
+      padding: 20px;
+      z-index: 1000;
+      animation: slideUp 0.5s ease-in-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .chat-popup h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #3db2ff;
+    }
+
+    .chat-popup input,
+    .chat-popup textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #1a1a2e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+
+    .chat-popup button {
+      width: 100%;
+      background: #3db2ff;
+      color: #000;
+      font-weight: bold;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #3db2ff;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    /* Confirmation Popup Styling */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #111;
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      z-index: 2000;
+    }
+
+    .popup h3 {
+      color: #0f0;
+      margin-bottom: 10px;
+    }
+
+    .popup button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #3db2ff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #000;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>How Can We Help You Today?</h1>
+
+  <div class="issue-select-container">
+    <select id="issue-select">
+      <option value="">-- Select an Issue --</option>
+      <option value="How do I return goods?">How do I return goods?</option>
+      <option value="I received a damaged product">I received a damaged product</option>
+      <option value="Wrong item delivered">Wrong item delivered</option>
+      <option value="Delivery taking too long">Delivery taking too long</option>
+      <option value="How to track my order">How to track my order</option>
+      <option value="Payment not going through">Payment not going through</option>
+      <option value="Charged twice">Charged twice</option>
+      <option value="Cannot log in">Cannot log in</option>
+      <option value="Reset my password">Reset my password</option>
+      <option value="Cancel my order">Cancel my order</option>
+      <option value="Where is my receipt?">Where is my receipt?</option>
+      <option value="Issues with bank transfer">Issues with bank transfer</option>
+      <option value="How to upload proof of payment">How to upload proof of payment</option>
+      <option value="How to change my address">How to change my address</option>
+      <option value="Account locked">Account locked</option>
+      <option value="How to use coupon code">How to use coupon code</option>
+      <option value="My product hasn’t arrived">My product hasn’t arrived</option>
+      <option value="Delayed refund">Delayed refund</option>
+      <option value="App not working">App not working</option>
+      <option value="Other issue">Other issue</option>
+    </select>
+  </div>
+
+  <div class="chat-popup" id="chatPopup">
+    <button class="close-btn" onclick="closeChat()">×</button>
+    <h2>Tell Us More</h2>
+    <form id="purchase-form" method="POST" enctype="multipart/form-data">
+      <input type="text" name="name" placeholder="Your Name" required />
+      <input type="email" name="email" placeholder="Your Email" required />
+      <input type="text" id="selected-issue" name="issue" placeholder="Issue" readonly />
+      <textarea name="message" placeholder="Explain your issue..." rows="5" required></textarea>
+      <button type="submit">Send to Support</button>
+    </form>
+  </div>
+
+  <!-- Confirmation Popup -->
+  <div id="confirmationPopup" class="popup">
+    <h3>✅ Payment Info Submitted Successfully!</h3>
+    <p>We will verify and contact you shortly.</p>
+    <button onclick="closeConfirmation()">OK</button>
+  </div>
+
+  <script>
+    const select = document.getElementById('issue-select');
+    const popup = document.getElementById('chatPopup');
+    const selectedIssue = document.getElementById('selected-issue');
+    const confirmationPopup = document.getElementById('confirmationPopup');
+    const form = document.getElementById('purchase-form');
+
+    select.addEventListener('change', () => {
+      if (select.value) {
+        selectedIssue.value = select.value;
+        popup.style.display = 'block';
+      }
+    });
+
+    function closeChat() {
+      popup.style.display = 'none';
+      select.value = '';
+    }
+
+    function closeConfirmation() {
+      confirmationPopup.style.display = 'none';
+      closeChat();
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault(); // Prevent default form submission
+      confirmationPopup.style.display = 'block';
+      form.reset(); // Optional: Reset the form
+    });
+  </script>
+</body>
+</html>

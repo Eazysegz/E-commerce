@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shopping Reels</title>
+  <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #000, #2f2f2f);
+      overflow-x: hidden;
+      color: white;
+    }
+
+    header {
+      background: #111;
+      color: #0f0;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 5px 10px rgba(0, 255, 0, 0.1);
+    }
+
+    #searchBar {
+      width: 90%;
+      margin: 80px auto 10px;
+      display: block;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+      box-shadow: 0 0 10px rgba(0,255,0,0.3);
+    }
+
+    #video-feed {
+      position: absolute;
+      top: 140px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      padding-bottom: 100px;
+    }
+
+    .video-container {
+      height: 100vh;
+      scroll-snap-align: start;
+      position: relative;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px rgba(0,255,0,0.15);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .video-info {
+      position: absolute;
+      bottom: 60px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      animation: fadeInUp 1s ease;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .actions {
+      position: absolute;
+      right: 10px;
+      bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .actions button {
+      background: #0f0;
+      color: black;
+      border: none;
+      font-size: 1.1rem;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #0f0;
+      transition: transform 0.2s ease;
+    }
+
+    .actions button:hover {
+      transform: scale(1.05);
+    }
+
+    .floating-plus {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0f0;
+      color: black;
+      font-size: 2rem;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      z-index: 20;
+      box-shadow: 0 0 15px #0f0;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 30;
+    }
+
+    .modal-box {
+      background: #111;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .modal-box input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    .modal-box button {
+      margin-top: 10px;
+      padding: 10px;
+      background: #0f0;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .drop-zone {
+      margin: 20px auto;
+      width: 90%;
+      max-width: 500px;
+      padding: 30px;
+      border: 2px dashed #0f0;
+      border-radius: 15px;
+      text-align: center;
+      color: #ccc;
+      cursor: pointer;
+      background: rgba(255,255,255,0.03);
+      animation: fadeInUp 1s ease;
+    }
+
+    .drop-zone.dragover {
+      background: rgba(0,255,0,0.1);
+      color: #0f0;
+    }
+
+    @media (max-width: 600px) {
+      .actions button {
+        font-size: 1rem;
+        padding: 8px;
+      }
+
+      .modal-box {
+        width: 95%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>Shopping Reels</header>
+
+  <input id="searchBar" type="text" placeholder="Search by product or category" oninput="filterVideos()" />
+
+  <div id="video-feed"></div>
+
+  <div class="drop-zone" id="dropZone">📂 Drag & Drop to Upload Video</div>
+
+  <button class="floating-plus" onclick="openUpload()">+</button>
+  <input type="file" accept="video/*" id="videoUploader" />
+
+  <!-- Upload Modal -->
+  <div class="modal" id="uploadModal">
+    <div class="modal-box">
+      <h3>Enter Upload Details</h3>
+      <input type="text" id="videoName" placeholder="Video Name" />
+      <input type="text" id="videoCategory" placeholder="Category" />
+      <button onclick="submitUpload()">Upload</button>
+    </div>
+  </div>
+
+  <script>
+    const videoFeed = document.getElementById("video-feed");
+    const dropZone = document.getElementById("dropZone");
+    const videoUploader = document.getElementById("videoUploader");
+    const uploadModal = document.getElementById("uploadModal");
+
+    let selectedFile = null;
+    let videos = JSON.parse(localStorage.getItem("reelVideos") || "[]");
+
+    function renderVideos() {
+      videoFeed.innerHTML = "";
+      videos.forEach((v, i) => {
+        const container = document.createElement("div");
+        container.className = "video-container";
+
+        const video = document.createElement("video");
+        video.src = v.url;
+        video.controls = true;
+        video.autoplay = true;
+        video.loop = true;
+        video.playsInline = true;
+
+        const info = document.createElement("div");
+        info.className = "video-info";
+        info.innerHTML = `<strong>${v.name}</strong><br>${v.category}`;
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+        actions.innerHTML = `
+          <button onclick="likeVideo(${i})">❤️ ${v.likes}</button>
+          <button onclick="deleteVideo(${i})">🗑️</button>
+        `;
+
+        container.appendChild(video);
+        container.appendChild(info);
+        container.appendChild(actions);
+        videoFeed.appendChild(container);
+        observer.observe(video);
+      });
+    }
+
+    function openUpload() {
+      videoUploader.click();
+    }
+
+    videoUploader.addEventListener("change", () => {
+      selectedFile = videoUploader.files[0];
+      if (selectedFile) {
+        uploadModal.style.display = "flex";
+      }
+    });
+
+    function submitUpload() {
+      const name = document.getElementById("videoName").value;
+      const category = document.getElementById("videoCategory").value;
+      if (!selectedFile || !name || !category) {
+        return alert("Please fill in all fields!");
+      }
+      const url = URL.createObjectURL(selectedFile);
+      videos.unshift({ url, name, category, likes: 0 });
+      localStorage.setItem("reelVideos", JSON.stringify(videos));
+      uploadModal.style.display = "none";
+      renderVideos();
+    }
+
+    function likeVideo(i) {
+      videos[i].likes += 1;
+      localStorage.setItem("reelVideos", JSON.stringify(videos));
+      renderVideos();
+    }
+
+    function deleteVideo(i) {
+      if (confirm("Delete this video?")) {
+        videos.splice(i, 1);
+        localStorage.setItem("reelVideos", JSON.stringify(videos));
+        renderVideos();
+      }
+    }
+
+    function filterVideos() {
+      const term = document.getElementById("searchBar").value.toLowerCase();
+      const filtered = videos.filter(v => v.name.toLowerCase().includes(term) || v.category.toLowerCase().includes(term));
+      videoFeed.innerHTML = "";
+      filtered.forEach((v, i) => {
+        const container = document.createElement("div");
+        container.className = "video-container";
+
+        const video = document.createElement("video");
+        video.src = v.url;
+        video.controls = true;
+        video.autoplay = true;
+        video.loop = true;
+        video.playsInline = true;
+
+        const info = document.createElement("div");
+        info.className = "video-info";
+        info.innerHTML = `<strong>${v.name}</strong><br>${v.category}`;
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+        actions.innerHTML = `
+          <button onclick="likeVideo(${i})">❤️ ${v.likes}</button>
+          <button onclick="deleteVideo(${i})">🗑️</button>
+        `;
+
+        container.appendChild(video);
+        container.appendChild(info);
+        container.appendChild(actions);
+        videoFeed.appendChild(container);
+        observer.observe(video);
+      });
+    }
+
+    // Drag & Drop
+    dropZone.addEventListener("dragover", e => {
+      e.preventDefault();
+      dropZone.classList.add("dragover");
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("dragover");
+    });
+
+    dropZone.addEventListener("drop", e => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+      selectedFile = e.dataTransfer.files[0];
+      if (selectedFile && selectedFile.type.startsWith("video/")) {
+        uploadModal.style.display = "flex";
+      }
+    });
+
+    // Autoplay scroll logic
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const video = entry.target;
+        if (entry.isIntersecting) {
+          document.querySelectorAll("video").forEach(v => v.pause());
+          video.play();
+        } else {
+          video.pause();
+        }
+      });
+    }, { threshold: 0.9 });
+
+    renderVideos();
+  </script>
+</body>
+</html>

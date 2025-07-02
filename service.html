@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Our Services - Eazysegz Shop</title>
+  <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #000000, #3a3a3a); /* black to ash */
+      color: #fff;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 2rem;
+      color: #ffd700;
+      text-shadow: 2px 2px 8px #000;
+      animation: fadeInDown 1s ease;
+    }
+
+    .services-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .service-box {
+      background: #111;
+      border: 1px solid #444;
+      border-left: 5px solid #0f0;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      animation: slideInUp 0.8s ease forwards;
+    }
+
+    .service-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 255, 0, 0.3);
+    }
+
+    .service-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #0f0;
+      margin-bottom: 0.5rem;
+    }
+
+    .service-desc {
+      font-size: 1rem;
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .service-title {
+        font-size: 1.2rem;
+      }
+      .service-desc {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>🛒 Our Premium Services</header>
+
+  <div class="services-container">
+    <div class="service-box">
+      <div class="service-title">Fast Doorstep Delivery</div>
+      <div class="service-desc">
+        We ensure swift and secure delivery of your products across all regions. Track your items live and get updates till it reaches your hands.
+      </div>
+    </div>
+
+    <div class="service-box">
+      <div class="service-title">24/7 Customer Support</div>
+      <div class="service-desc">
+        Our support team is always available to help with product inquiries, orders, refunds, or general issues. Chat or call anytime.
+      </div>
+    </div>
+
+    <div class="service-box">
+      <div class="service-title">Secure Payment Methods</div>
+      <div class="service-desc">
+        Pay with confidence using secure channels including bank transfer, debit card, and our pay-on-delivery option.
+      </div>
+    </div>
+
+    <div class="service-box">
+      <div class="service-title">Verified Product Quality</div>
+      <div class="service-desc">
+        Every item on our platform goes through a strict verification process to ensure quality, durability, and performance.
+      </div>
+    </div>
+
+    <div class="service-box">
+      <div class="service-title">Real Customer Reviews</div>
+      <div class="service-desc">
+        Get honest insights from buyers who already used the products. We don’t filter real reviews — shop based on trust.
+      </div>
+    </div>
+
+    <div class="service-box">
+      <div class="service-title">Flexible Return Policy</div>
+      <div class="service-desc">
+        Not satisfied? You can easily request a return or replacement within 7 days. No stress. No hidden rules.
+      </div>
+    </div>
+  </div>
+
+
+</body>
+</html>

@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Junior E-commerce</title>
+
+  <!-- Font Awesome for Icons -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+  <style>
+  /* Basic Reset for all elements */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Body background, font, and spacing */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #000, #1a1a1a);
+      color: #fff;
+      padding-top: 100px;  /* space for fixed header */
+      padding-bottom: 100px;  /* space for fixed footer */
+    }
+
+    /* Fixed Header Styling */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: #000;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05);
+    }
+
+    /* Logo Text */
+    header h1 {
+      font-size: 24px;
+      color: #ff9900;
+      margin-top:-20px;
+    }
+
+    /* Search Bar */
+    .search-bar {
+      position: relative;
+      background-color:#222;
+      border-radius:6px;
+      margin-left:20px;
+    }
+
+    /* Search Icon */
+    .search-bar i {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: #222;
+    }
+
+    /* Scrolling Text Bar Below Header */
+    .scroll-text {
+      position: fixed;
+      top: 55px;
+      left: 0; right: 0;
+      background: #111;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      z-index: 1000;
+    }
+
+    .scroll-text p {
+      white-space: nowrap;
+      padding-left: 100%;
+      animation: scrollLeft 20s linear infinite;
+      font-size: 13px;
+      color: #ccc;
+    }
+
+    /* Scroll animation keyframes */
+    @keyframes scrollLeft {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* Product List Container */
+    .product {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    /* Individual Product Card */
+    .product-item {
+      border: 1px solid #444;
+      background: #222;
+      padding: 10px;
+      border-radius: 10px;
+      width: 45%;
+      max-width: 280px;
+    }
+
+    /* Product Image Styling */
+    .product-item img {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    /* Common Button Styling */
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background: #ff9900;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Purchase Modal (Hidden by Default) */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.95);
+      z-index: 1000;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    /* Modal Content Box */
+    .modal-content {
+      background: #111;
+      margin: auto;
+      padding: 20px;
+      max-width: 600px;
+      border-radius: 10px;
+      color: #fff;
+      position: relative;
+    }
+
+    /* Modal Close Button */
+    .close {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    .modal-content img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    /* Form Field Wrapper */
+    .form-field {
+      margin: 10px 0;
+    }
+
+    /* Input, Select, Textarea Styling */
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+    }
+
+    /* Transport Cost Box */
+    #transport-cost {
+      background: #eee;
+      color: #000;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    /* Button Container in Modal */
+    .purchase-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    /* Button Variants */
+    .add-market { background: #444; color: #fff; }
+    .purchase-now { background: #0f0; color: #000; }
+
+    /* Fixed Bottom Navigation Bar */
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to right, #000, #1a1a1a);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 999;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Individual Nav Item */
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    .nav-item i {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .nav-item:hover {
+      color: #00bfff;
+    }
+
+    /* For embedded content like Google Forms */
+    iframe {
+      border: none;
+      width: 100%;
+      height: 750px;
+      margin-top: 15px;
+      border-radius: 8px;
+    }
+
+    /* Support Button */
+    .support-btn {
+      margin-top: 10px;
+      background: #ff9900;
+      color: #000;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+    }
+  
+        
+         /* Floating chat button */
+    .chat-btn {
+      position: fixed;
+      bottom: 50px;
+      right: 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 28px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      cursor: pointer;
+      z-index: 9999;
+    }
+
+    /* Chat window */
+    .chat-box {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 300px;
+      max-height: 400px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 9999;
+    }
+
+    .chat-header {
+      background: #007bff;
+      color: black;
+      padding: 10px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-body {
+      padding: 10px;
+      flex: 1;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+
+    .chat-msg {
+      margin: 10px 0;
+      color:black;
+    }
+
+    .chat-msg.bot {
+      text-align: left;
+    }
+
+    .chat-msg.user {
+      text-align: right;
+    }
+
+    .chat-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .chat-options button {
+      flex: 1;
+      padding: 5px;
+      background: #e1ecf4;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .close-chat {
+      cursor: pointer;
+      font-size: 18px;
+    }
+    
+    /* Confirmation Popup Styling */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #111;
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      z-index: 2000;
+    }
+
+    .popup h3 {
+      color: #0f0;
+      margin-bottom: 10px;
+    }
+    .float-btn {
+  position: fixed;
+  bottom: 40px;
+  left: 20px;
+  background-color: #ffaa00;
+  color: #000;
+  padding: 15px 20px;
+  border-radius: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: background 0.3s ease;
+  z-index: 1000;
+}
+
+.float-btn:hover {
+  background-color: #ffcc33;
+}
+.go-dashboard-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #222;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-decoration: none;
+  z-index: 9999;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: background 0.3s ease;
+}
+.go-dashboard-btn:hover {
+  background: #444;
+}
+  </style>
+</head>
+<body>
+<!-- Fixed Header with Logo and Search -->
+<header>
+  <h1>shopping</h1>
+  <div class="search-bar">
+    <input type="search" id="search-input" placeholder="Search products...">
+    <i class="fas fa-search"></i>
+  </div>
+</header>
+
+<!-- Scrolling Text Banner -->
+<div class="scroll-text">
+  <p>We offer best service &nbsp; We offer best service &nbsp;</p>
+</div>
+<!-- Floating Button -->
+<button class="chat-btn" id="openChat">AI </button>
+
+<!-- Chat Box -->
+<div class="chat-box" id="chatBox">
+  <div class="chat-header">
+    EasyBot 🤖
+    <span class="close-chat" id="closeChat">✖</span>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="chat-msg bot">👋 Hi there! I'm EasyBot. How can I help you today?</div>
+    <div class="chat-options">
+      <button onclick="respond('browse')">Browse Products</button>
+      <button onclick="respond('track')">Track My Order</button>
+      <button onclick="respond('help')">Talk to Support</button>
+    </div>
+  </div>
+</div>
+<div class="float-btn" onclick="window.location.href='ooo.html'">
+  Check for Info and Buy
+</div>
+<a href="dashboard.html" class="go-dashboard-btn">🛠️ Go to Dashboard</a>
+
+<!-- Product Grid Container (populated via JavaScript) -->
+<div class="product" id="product-container"></div>
+
+<!-- Bottom Navigation Bar -->
+<nav>
+  <!-- Navigation items with icons -->
+  <div class="nav-item">
+    <a href="home. html" style="text-decoration: none; color: #ccc;">
+      <i class="fas fa-store"></i><span> Home</span>
+    </a>
+  </div>
+  <div class="nav-item">
+    <a href="chat.html" style="text-decoration: none; color: #ccc;">
+      <i class="fas fa-user"></i><span> Chat</span>
+    </a>
+  </div>
+  <div class="nav-item">
+    <a href="service.html" style="text-decoration: none; color: #ccc;">
+      <i class="fas fa-concierge-bell"></i><span> Services</span>
+    </a>
+  </div>
+  <div class="nav-item">
+    <a href="reels.html" style="text-decoration: none; color: #ccc;">
+      <i class="fas fa-user"></i><span> reels</span>
+    </a>
+  </div>
+</nav>
+<!-- Full-Screen Modal for Purchase Process -->
+
+<div id="purchase-modal" class="modal">
+  <div class="modal-content">
+  
+
+    <!-- Close Button -->
+    <span class="close">&times;</span>
+
+    <!-- Product Details in Modal -->
+    <img id="modal-image" src="" />
+    <h3 id="modal-description"></h3>
+    <p id="modal-inner-description"></p>
+    <p><strong>Price: ₦<span id="modal-price"></span></strong></p>
+    
+    
+    <p class="detail">Note:Copy of your order will be send to you through your email
+    and your order number </p>
+
+    <!-- Purchase Form (submits to Getform endpoint) -->
+    <form id="purchase-form" action="https://getform.io/f/apjplxwa" method="POST" enctype="multipart/form-data">
+      
+      <!-- Buyer Info -->
+      <div class="form-field">
+        <input type="text" id="buyer-name" name="Buyer Name" placeholder="Your Name" required />
+      </div>
+      <div class="form-field">
+        <input type="email" id="buyer-email" name="Buyer Email" placeholder="Your Email" required />
+      </div>
+
+      <!-- Delivery Method -->
+      <div class="form-field"> 
+        <select id="delivery-method" name="Delivery Method" required>
+          <option value="">Select Delivery Method</option>
+          <option value="pickup">Pickup</option>
+          <option value="service">Service</option>
+        </select>
+      </div>
+
+      <!-- Location Selection for 'Service' -->
+      <div class="form-field" id="location-select" style="display:none;"> 
+        <select id="delivery-location" name="Delivery Location">
+          <option value="">Select State</option>
+          <option value="Lagos">Lagos</option>
+          <option value="Abuja">Abuja</option>
+          <option value="Kano">Kano</option>
+          <option value="Others">Other States</option>
+        </select>
+      </div>
+
+      <!-- Dynamic Transport Cost Display -->
+      <div id="transport-cost" style="display:none;"></div>
+
+      <!-- Full Delivery Address -->
+      <div class="form-field" id="addressSection" style="display:none;"> 
+        <textarea id="address" name="Address" rows="3" placeholder="Full address..."></textarea>
+      </div>
+
+      <!-- Payment Method -->
+      <div class="form-field"> 
+        <select id="payment-method" name="Payment Method" required>
+          <option value="">Select Payment Method</option>
+          <option value="bank">Bank Transfer</option>
+          <option value="pay-after-delivery">Pay After Delivery</option>
+        </select>
+      </div>
+
+      <!-- Bank Transfer Details (shown conditionally) -->
+      <div id="bank-details" style="display:none;">
+        <strong>Bank Details:</strong><br />
+        XYZ Bank<br />Acc No: 1234567890<br />Name: Jumia Nigeria
+      </div>
+
+      <!-- Upload Receipt (shown conditionally) -->
+      <div id="receipt-upload" style="display:none;">
+        <div class="form-field">
+          <input type="file" id="image-input" name="image" accept="image/*">
+          <div id="image-preview-box" style="width: 100px; height: 100px; border: 1px solid">
+            <img id="image-preview" src="" alt="Image Preview">
+          </div>
+        </div>
+      </div>
+
+      <!-- Info for 'Pay After Delivery' -->
+      <div id="pay-delivery" style="display:none; color: #d97706; font-size: 14px; margin-bottom: 10px;">
+        <br>
+        <strong>Your product is helping oh well</strong>
+      </div>
+
+      <!-- Quantity Input -->
+      <div class="form-field">
+        <input type="number" id="quantity" name="Quantity" placeholder="Enter Quantity (e.g., 1, 2)" min="1" required />
+      </div>
+
+      <!-- Additional Goods Question -->
+      <div class="form-field">
+        <label for="more-goods">Do you want to order more goods?</label>
+        <select id="more-goods" name="More Goods" required>
+          <option value="">Select an option</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+
+      <!-- Additional Goods Info (shown if 'Yes') -->
+      <div id="more-goods-info" style="display:none; color: #d97706; font-size: 14px; margin-bottom: 10px;">
+        Note: All goods you order after placing this purchase will be grouped under a single delivery. <br>
+        <strong>Transport fare will be charged only once, not for each product.
+        Ignore  the transport fees for the rest of your order. All your orders will be send to you on email </strong>
+      </div>
+      </div>
+      
+      
+
+      <!-- Submit Buttons -->
+      <div class="purchase-buttons">
+        <button class="add-market" type="button">Add to Market</button>
+        <button class="purchase-now" type="submit">Purchase Now</button>
+      </div>
+      
+    </form>
+  <a href="godd.html"><button class="float-btn chat-btn">
+    <div><p class="chat">check about in full </p></div></button></a>
+
+
+<!-- Confirmation Popup -->
+<div id="confirmationPopup" class="popup">
+  <h3>✅ Payment Info Submitted Successfully!</h3>
+  <p>We will verify and contact you shortly.</p>
+</div>
+
+<script>
+// === PRODUCT & MODAL SCRIPT ===
+const modal = document.getElementById('purchase-modal');
+const closeBtn = document.querySelector('.close');
+const images = JSON.parse(localStorage.getItem('images')) || [];
+const container = document.getElementById('product-container');
+const deliveryMethod = document.getElementById('delivery-method');
+const locationSelect = document.getElementById('location-select');
+const deliveryLocation = document.getElementById('delivery-location');
+const transportCost = document.getElementById('transport-cost');
+const addressSection = document.getElementById('addressSection');
+const paymentMethod = document.getElementById('payment-method');
+const bankDetails = document.getElementById('bank-details');
+const receiptUpload = document.getElementById('receipt-upload');
+const payDelivery = document.getElementById('pay-delivery');
+const purchaseForm = document.getElementById('purchase-form');
+const imageInput = document.getElementById('image-input');
+const imagePreviewBox = document.getElementById('image-preview-box');
+const imagePreview = document.getElementById('image-preview');
+const addToMarketButton = document.querySelector('.add-market');
+const searchInput = document.getElementById('search-input');
+const purchasedProductsContainer = document.getElementById('purchased-products-container');
+
+// Populate product container from localStorage
+images.forEach((item, index) => {
+  const card = document.createElement('div');
+  card.className = 'product-item';
+  card.innerHTML = `
+    <img src="${item.src}" />
+    <p>${item.description}</p>
+    <strong>₦${item.price}</strong>
+    <button onclick="openModal(${index})">Purchase</button>
+  `;
+  container.appendChild(card);
+});
+
+// Open modal to show product details
+function openModal(index) {
+  const item = images[index];
+  document.getElementById('modal-image').src = item.src;
+  document.getElementById('modal-description').textContent = item.description;
+  document.getElementById('modal-inner-description').textContent = item.innerDescription;
+  document.getElementById('modal-price').textContent = item.price;
+
+  // Remove existing hidden inputs
+  const existingProductPriceInput = purchaseForm.querySelector('input[name="Product Price"]');
+  if (existingProductPriceInput) existingProductPriceInput.remove();
+  const existingProductDescriptionInput = purchaseForm.querySelector('input[name="Product Description"]');
+  if (existingProductDescriptionInput) existingProductDescriptionInput.remove();
+
+  // Add hidden input fields for product details
+  const productPriceInput = document.createElement('input');
+  productPriceInput.type = 'hidden';
+  productPriceInput.name = 'Product Price';
+  productPriceInput.value = item.price;
+  purchaseForm.appendChild(productPriceInput);
+
+  const productDescriptionInput = document.createElement('input');
+  productDescriptionInput.type = 'hidden';
+  productDescriptionInput.name = 'Product Description';
+  productDescriptionInput.value = item.description;
+  purchaseForm.appendChild(productDescriptionInput);
+
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden'; // Disable background scroll
+}
+
+// Close modal
+closeBtn.onclick = () => {
+  modal.style.display = 'none';
+  document.body.style.overflow = 'auto'; // Re-enable background scroll
+};
+
+// Add to market button logic
+addToMarketButton.addEventListener('click', () => {
+  const product = {
+    image: document.getElementById('modal-image').src,
+    description: document.getElementById('modal-description').textContent,
+    price: document.getElementById('modal-price').textContent,
+  };
+  const purchasedProducts = JSON.parse(localStorage.getItem('purchasedProducts')) || [];
+  purchasedProducts.push(product);
+  localStorage.setItem('purchasedProducts', JSON.stringify(purchasedProducts));
+  window.location.href = 'index.html';
+});
+
+// Display purchased products
+if (purchasedProductsContainer) {
+  const purchasedProducts = JSON.parse(localStorage.getItem('purchasedProducts')) || [];
+  purchasedProducts.forEach((product) => {
+    const productHTML = `
+      <div class="purchased-product">
+        <img src="${product.image}" />
+        <p>${product.description}</p>
+        <strong>₦${product.price}</strong>
+      </div>
+    `;
+    purchasedProductsContainer.insertAdjacentHTML('beforeend', productHTML);
+  });
+}
+
+// Close modal by clicking outside
+window.onclick = e => {
+  if (e.target == modal) modal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+};
+
+// Delivery method selection logic
+deliveryMethod.addEventListener('change', () => {
+  const serviceSelected = deliveryMethod.value === 'service';
+  locationSelect.style.display = serviceSelected ? 'block' : 'none';
+  transportCost.style.display = 'none';
+  addressSection.style.display = 'none';
+  if (!serviceSelected) {
+    deliveryLocation.value = '';
+    document.getElementById('delivery-address').value = '';
+  }
+});
+
+// Location selection and transport cost logic
+deliveryLocation.addEventListener('change', () => {
+  let cost = '';
+  switch (deliveryLocation.value) {
+    case 'Lagos': cost = '₦1000'; break;
+    case 'Abuja': cost = '₦1500'; break;
+    case 'Kano': cost = '₦1200'; break;
+    case 'Others': cost = '₦2000'; break;
+  }
+  if (cost) {
+    transportCost.textContent = `Transport Cost: ${cost}`;
+    transportCost.style.display = 'block';
+    addressSection.style.display = 'block';
+  }
+});
+
+// Payment method logic
+paymentMethod.addEventListener('change', () => {
+  const bank = paymentMethod.value === 'bank';
+  bankDetails.style.display = bank ? 'block' : 'none';
+  receiptUpload.style.display = bank ? 'block' : 'none';
+  payDelivery.style.display = paymentMethod.value === 'pay-after-delivery' ? 'block' : 'none';
+  if (!bank) {
+    imageInput.value = '';
+    imagePreviewBox.style.display = 'none';
+  }
+});
+
+// Image preview for receipt
+imageInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      imagePreview.src = reader.result;
+      imagePreviewBox.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// More goods logic
+document.getElementById('more-goods').addEventListener('change', function () {
+  const infoBox = document.getElementById('more-goods-info');
+  infoBox.style.display = this.value === 'yes' ? 'block' : 'none';
+});
+
+// Product search functionality
+searchInput.addEventListener('input', () => {
+  const searchValue = searchInput.value.toLowerCase();
+  const productItems = document.querySelectorAll('.product-item');
+  productItems.forEach((item) => {
+    const description = item.querySelector('p').textContent.toLowerCase();
+    item.style.display = description.includes(searchValue) ? 'block' : 'none';
+  });
+});
+
+// === CHAT BOT SCRIPT ===
+const chatBtn = document.getElementById('openChat');
+const chatBox = document.getElementById('chatBox');
+const closeChat = document.getElementById('closeChat');
+const chatBody = document.getElementById('chatBody');
+
+chatBtn.onclick = () => chatBox.style.display = 'flex';
+closeChat.onclick = () => chatBox.style.display = 'none';
+
+function respond(type) {
+  let userText = "";
+  let botReply = "";
+
+  switch(type) {
+    case 'browse':
+      userText = "I want to browse products.";
+      botReply = "Great! You can explore by category or type. Would you like to view Electronics, Fashion, or Home Goods? go to search bar and get your wonderful goods of your choice";
+      break;
+    case 'track':
+      userText = "I want to track my order.";
+      botReply = "You can track your goods through your email order send to you.";
+      break;
+    case 'help':
+      userText = "I need help from support.";
+      botReply = "Sure! You can chat with our support team at: <br><b>support@yourshop.com</b><br>or call 📞 0900-123-4567";
+      break;
+  }
+
+  // User message
+  chatBody.innerHTML += `<div class="chat-msg user">${userText}</div>`;
+
+  // Bot reply
+  setTimeout(() => {
+    chatBody.innerHTML += `<div class="chat-msg bot">${botReply}</div>`;
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }, 500);
+}
+
+
+// Handle form submission without redirect
+purchaseForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const formData = new FormData(purchaseForm);
+  fetch(purchaseForm.action, {
+    method: 'POST',
+    body: formData
+  }).then(response => {
+    if (response.ok) {
+      document.getElementById('confirmationPopup').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('confirmationPopup').style.display = 'none';
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        purchaseForm.reset();
+      }, 300000); // Close after 5 minutes (300,000ms)
+    } else {
+      alert("Something went wrong. Please try again later.");
+    }
+  }).catch(error => {
+    alert("Network error. Please check your connection.");
+  });
+});
+</script>
+
+</body>
+</html>
